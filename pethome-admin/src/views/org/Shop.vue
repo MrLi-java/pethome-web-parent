@@ -7,7 +7,7 @@
 					<el-input v-model.trim="filters.keyWord" placeholder="关键字"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getEmployees">查询</el-button>
+					<el-button type="primary" v-on:click="getShops">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -16,32 +16,28 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="employees" :height="350"  highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="shops" :height="350"  highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column type="index" label="序号" width="60">
 			</el-table-column>
-			<el-table-column prop="username" label="姓名" width="100" sortable>
+			<el-table-column prop="name" label="门店名称" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="email" label="邮箱" width="180"  sortable>
+			<el-table-column prop="tel" label="门店电话"  sortable>
 			</el-table-column>
-			<el-table-column prop="phone" label="电话" width="110"  sortable>
+			<el-table-column prop="registerTime" label="注册时间" width="180"  sortable>
 			</el-table-column>
-      <el-table-column prop="password" label="密码"  sortable>
-      </el-table-column>
-      <el-table-column prop="age" label="年龄" width="100"  sortable>
-      </el-table-column>
-      <el-table-column prop="state" label="状态" width="100" sortable>
+      <el-table-column prop="state" label="状态" width="180" sortable>
         <template scope="scope">
-          <span v-if="scope.row.state == 1" style="color: green">上班</span>
-          <span v-else-if="scope.row.state == 0" style="color: green">休息</span>
+          <span v-if="scope.row.state == 0" style="color: green">正在营业</span>
+          <span v-else-if="scope.row.state == -1" style="color: green">停业整顿</span>
           <span v-else="" style="color: green">未知</span>
         </template>
       </el-table-column>
-			<el-table-column prop="department.name" label="所在部门" width="100" sortable>
-			</el-table-column>
-      <el-table-column prop="shop.name" label="所在门店" width="100" sortable>
+			<el-table-column prop="logo" label="图标" width="180" sortable>
       </el-table-column>
+			<el-table-column prop="admin_id" label="管理员" width="180" sortable>
+			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -63,58 +59,38 @@
 		</el-col>
 
 		<!--编辑或添加界面-->
-		<el-dialog title="添加或修改" :visible.sync="employeeFormVisible" :close-on-click-modal="false">
-			<el-form :model="employeeForm" label-width="80px" :rules="employeeFormRules" ref="employeeForm">
-				<el-form-item label="姓名" prop="username">
-					<el-input v-model="employeeForm.username" auto-complete="off"></el-input>
+		<el-dialog title="添加或修改" :visible.sync="shopFormVisible" :close-on-click-modal="false">
+			<el-form :model="shopForm" label-width="80px" :rules="shopFormRules" ref="shopForm">
+				<el-form-item label="门店名称" prop="name">
+					<el-input v-model="shopForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="employeeForm.email" auto-complete="off"></el-input>
+        <el-form-item label="门店电话" prop="tel">
+          <el-input v-model="shopForm.tel" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="电话" prop="phone">
-          <el-input v-model="employeeForm.phone" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="employeeForm.password" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="年龄" prop="age">
-          <el-input v-model="employeeForm.age" auto-complete="off"></el-input>
+        <el-form-item label="注册时间" prop="registerTime">
+<!--          <el-input v-model="shopForm.registerTime" auto-complete="off"></el-input>-->
+          <el-date-picker
+              v-model="shopForm.registerTime"
+              type="date"
+              placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
 				<el-form-item label="state">
-					<el-radio-group v-model="employeeForm.state">
-						<el-radio class="radio" :label="1">上班</el-radio>
-						<el-radio class="radio" :label="0">休息</el-radio>
+					<el-radio-group v-model="shopForm.state">
+						<el-radio class="radio" :label="0">正在营业</el-radio>
+						<el-radio class="radio" :label="-1">停业整顿</el-radio>
 					</el-radio-group>
 				</el-form-item>
-        <el-form-item label="部门" prop="department">
-<!--          <el-input v-model="employeeForm.manager" auto-complete="off"></el-input>-->
-          <el-select v-model="employeeForm.department" placeholder="请选择" value-key="id">
-            <el-option
-                v-for="item in departments"
-                :key="item.id"
-                :label="item.name"
-                :value="item">
-              <span style="float: left">{{ item.name }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.sn }}</span>
-            </el-option>
-          </el-select>
+        <el-form-item label="门店地址" prop="address">
+          <el-input v-model="shopForm.address" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="门店" prop="department">
-          <el-select v-model="employeeForm.shop" placeholder="请选择" value-key="id">
-            <el-option
-                v-for="item in shops"
-                :key="item.id"
-                :label="item.name"
-                :value="item">
-              <span style="float: left">{{ item.name }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.address }}</span>
-            </el-option>
-          </el-select>
+        <el-form-item label="管理员" prop="admin_id">
+          <el-input v-model="shopForm.admin_id" auto-complete="off"></el-input>
         </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="employeeFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="employeeSubmit" :loading="employeeLoading">提交</el-button>
+				<el-button @click.native="shopFormVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="shopSubmit" :loading="shopLoading">提交</el-button>
 			</div>
 		</el-dialog>
 
@@ -125,7 +101,7 @@
 <script>
 	// import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	// import { getemployeeListPage, removeemployee, batchRemoveemployee, editemployee, addemployee } from '../../api/api';
+	// import { getshopListPage, removeshop, batchRemoveshop, editshop, addshop } from '../../api/api';
 
 	export default {
 		data() {
@@ -133,36 +109,33 @@
 				filters: {
           keyWord: ''
 				},
-				employees: [],
+				shops: [],
 				total: 0,
 				page: 1,
         pageSize: 10,
-        departments:[],
-        shops:[],
 				listLoading: false,
 				sels: [],//列表选中列
 
-				employeeFormVisible: false,//编辑界面是否显示
-				employeeLoading: false,
-				employeeFormRules: {
-					username: [
-						{ required: true, message: '请输入员工姓名', trigger: 'blur' }
+				shopFormVisible: false,//编辑界面是否显示
+				shopLoading: false,
+				shopFormRules: {
+					name: [
+						{ required: true, message: '请输入部门名称', trigger: 'blur' }
 					],
-          email: [
-            { required: true, message: '请输入员工邮箱', trigger: 'blur' }
+          sn: [
+            { required: true, message: '请输入部门描述', trigger: 'blur' }
           ]
 				},
 				//编辑界面数据
-				employeeForm: {
+				shopForm: {
 					id: null,
-					username: '',
-					email:'',
-          phone:'',
-          password:'',
-          age:null,
-          state:1,
-          department:null,
-          shop:null
+					name: '',
+					tel:'',
+          registerTime:null,
+          state:0,
+          address:'',
+          logo:'',
+          admin_id:null
         },
 
 
@@ -172,7 +145,7 @@
 		  "filters.keyWord"(newValue, oldValue){
         //console.log(newValue, oldValue);
         this.keyWord = newValue;
-        this.getEmployees();
+        this.getShops();
       },
 
       /*filters:{//深度监听，可监听到对象、数组的变化
@@ -189,26 +162,26 @@
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getEmployees();
+				this.getShops();
 			},
       handleSizeChange(val){
 			  this.pageSize = val;
-			  this.getEmployees();
+			  this.getShops();
       },
 			//获取部门列表
-			getEmployees() {
+			getShops() {
 				let para = {
 					currentPage: this.page,
           keyWord: this.filters.keyWord,
-          pageSize:this.pageSize
+          pageSize: this.pageSize
 				};
 				this.listLoading = true;
-				this.$http.post("/employee",para)
+				this.$http.post("/shop",para)
             .then(res=>{
               this.listLoading = false;
               //res = res.data;
               this.total = res.data.total;
-              this.employees = res.data.rows;
+              this.shops = res.data.rows;
             })
         .catch(res=>{
           alert("系统错误！！");
@@ -223,7 +196,7 @@
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let url = "/employee/"+row.id
+					let url = "/shop/"+row.id
 					this.$http.delete(url)
               .then(res=>{
                 this.listLoading = false;
@@ -240,7 +213,7 @@
                     type: 'error'
                   });
                 }
-                this.getEmployees();
+                this.getShops();
               })
               .catch(res=>{
                 alert("系统错误")
@@ -251,37 +224,36 @@
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
-				this.employeeFormVisible = true;
-        this.$refs['employeeForm'].resetFields();//重置表单校验
-				this.employeeForm = Object.assign({}, row);
+				this.shopFormVisible = true;
+        this.$refs['shopForm'].resetFields();//重置表单校验
+				this.shopForm = Object.assign({}, row);
+
 			},
 			//显示新增界面
 			handleAdd: function () {
-				this.employeeFormVisible = true;
-				this.employeeForm = {
+				this.shopFormVisible = true;
+				this.shopForm = {
           id: null,
-          username: '',
-          email:'',
-          phone:'',
-          password:'',
-          age:null,
-          state:1,
-          department:null,
-          shop:null
+          name: '',
+          tel:'',
+          registerTime:null,
+          state:0,
+          address:'',
+          logo:'',
+          admin_id:null
 				};
 			},
 			//编辑或添加
-			employeeSubmit: function () {
-				this.$refs.employeeForm.validate((valid) => {
+			shopSubmit: function () {
+				this.$refs.shopForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.employeeLoading = true;
+							this.shopLoading = true;
 							//NProgress.start();
-							let para = Object.assign({}, this.employeeForm);
+							let para = Object.assign({}, this.shopForm);
 							// para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-              console.log(para)
 
-              this.$http.put("/employee",para)
+              this.$http.put("/shop",para)
                   .then(result=>{
                     result = result.data;
                     if(result.success){
@@ -296,10 +268,10 @@
                       });
                     }
                     this.page=1
-                    this.employeeLoading = false;
-                    this.$refs['employeeForm'].resetFields();
-                    this.employeeFormVisible = false;
-                    this.getEmployees();
+                    this.shopLoading = false;
+                    this.$refs['shopForm'].resetFields();
+                    this.shopFormVisible = false;
+                    this.getShops();
                   })
                   .catch(result=>{
                     alert("系统错误！！！")
@@ -322,7 +294,7 @@
 					//NProgress.start();
 					// let para = { ids: ids };
 					// console.log(para)
-					this.$http.patch("/employee", ids)
+					this.$http.patch("/shop", ids)
               .then(res=>{
                 res = res.data;
                 if(res.success){
@@ -338,7 +310,7 @@
                 }
                 this.listLoading=false;
                 this.page=1;
-                this.getEmployees();
+                this.getShops();
               })
               .catch(res=>{
                 alert("系统错误！！！")
@@ -346,33 +318,9 @@
 				}).catch(() => {
 
 				});
-			},
-      getDepartments(){
-			  this.$http.get("/dept")
-            .then(result=>{
-              if(result){
-                this.departments = result.data;
-              }
-            })
-            .catch(result=>{
-              alert("系统错误！！！")
-            })
-      },
-      getShops(){
-        this.$http.get("/shop")
-            .then(result=>{
-              if(result){
-                this.shops = result.data;
-              }
-            })
-            .catch(result=>{
-              alert("系统错误！！！")
-            })
-      }
+			}
 		},
 		mounted() {
-			this.getEmployees();
-			this.getDepartments();
 			this.getShops();
 		}
 	}
