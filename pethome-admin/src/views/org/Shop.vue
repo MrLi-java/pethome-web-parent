@@ -99,7 +99,7 @@
 </template>
 
 <script>
-	// import util from '../../common/js/util'
+	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
 	// import { getshopListPage, removeshop, batchRemoveshop, editshop, addshop } from '../../api/api';
 
@@ -251,7 +251,7 @@
 							this.shopLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.shopForm);
-							// para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+              para.registerTime = (!para.registerTime || para.registerTime == '') ? '' : util.formatDate.format(new Date(para.registerTime), 'yyyy-MM-dd');
 
               this.$http.put("/shop",para)
                   .then(result=>{
