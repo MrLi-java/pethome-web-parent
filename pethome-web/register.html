@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="stylesheet" href="./AmazeUI-2.4.2/assets/css/amazeui.min.css"/>
+    <link href="./css/dlstyle.css" rel="stylesheet" type="text/css">
+    <script src="./AmazeUI-2.4.2/assets/js/jquery.min.js"></script>
+    <script src="./AmazeUI-2.4.2/assets/js/amazeui.min.js"></script>
+
+    <!--  引入vue和axios  -->
+    <script src="./plugins/vue/dist/vue.js"></script>
+    <script src="./plugins/axios/dist/axios.js"></script>
+    <script src="./js/common.js"></script>
+
+    <style type="text/css">
+        .validateMsg{
+            color: red;
+            font-size: 14px;
+            font-family: 宋体;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <div class="login-boxtitle">
+        <a href="home/demo.html"><img alt="" src="./images/logobig.png"/></a>
+    </div>
+
+    <div class="res-banner">
+        <div class="res-main">
+            <div class="login-banner-bg"><span></span><img src="./images/big.jpg"/></div>
+            <div class="login-box">
+                <!--
+                    前台用户系统：使用的框架是AmazeUI（类似于Bootstrap，都是基于jQuery的框架）
+                    class="am-tabs"
+                        表示AmazeUI的Tabs标签页、选项卡
+                    class="am-tabs-nav"
+                        表示标签页的点击切换的按钮，必须与下面的class="am-tabs-bd"中的一个小div进行一一对应
+                        am-active 表示当前处于被选中状态，同组内只能有一个处于被选中状态
+                -->
+                <div class="am-tabs" id="doc-my-tabs">
+                    <ul class="am-tabs-nav am-nav am-nav-tabs am-nav-justify">
+                        <li class="am-active"><a href="">邮箱注册</a></li>
+                        <li><a href="">手机号注册</a></li>
+                    </ul>
+                    <!--邮箱注册-->
+                    <div class="am-tabs-bd">
+                        <div class="am-tab-panel am-active">
+                            <form method="post">
+
+                                <div class="user-email">
+                                    <label for="email"><i class="am-icon-envelope-o"></i></label>
+                                    <input type="email" name="" id="email" placeholder="请输入邮箱账号">
+                                </div>
+                                <div class="user-pass">
+                                    <label for="password_email"><i class="am-icon-lock"></i></label>
+                                    <input type="password" name="" id="password_email" placeholder="设置密码">
+                                </div>
+                                <div class="user-pass">
+                                    <label for="passwordRepeat_email"><i class="am-icon-lock"></i></label>
+                                    <input type="password" name="" id="passwordRepeat_email" placeholder="确认密码">
+                                </div>
+
+                            </form>
+
+                            <div class="login-links">
+                                <label for="reader-me_email">
+                                    <input id="reader-me_email" type="checkbox"> 点击表示您同意商城《服务协议》
+                                </label>
+                            </div>
+                            <div class="am-cf">
+                                <input type="submit" name="" value="注册" class="am-btn am-btn-primary am-btn-sm am-fl">
+                            </div>
+
+                        </div>
+
+                        <!--手机验证码注册-->
+                        <div class="am-tab-panel" >
+                            <form method="post" :model="phoneReg">
+                                <div class="user-phone">
+                                    <label for="phone"><i class="am-icon-mobile-phone am-icon-md"></i></label>
+                                    <input type="tel" @blur="validPhone" v-model="phoneReg.phone" id="phone_reg" placeholder="请输入手机号">
+                                    <span class="validateMsg">{{phoneValidateMsg}}</span>
+                                </div>
+                                <div class="verification">
+                                    <label for="code"><i class="am-icon-code-fork"></i></label>
+                                    <input type="tel" v-model="phoneReg.verifyCode" id="code" placeholder="请输入验证码">
+                                    <a class="btn" href="javascript:void(0);" onclick="sendMobileCode();"
+                                       id="sendMobileCode">
+                                        <span id="dyMobileButton">获取</span></a>
+                                </div>
+                                <div class="user-pass">
+                                    <label for="password_phone"><i class="am-icon-lock"></i></label>
+                                    <input type="password" v-model="phoneReg.password" id="password_phone" placeholder="设置密码">
+                                </div>
+                                <div class="user-pass">
+                                    <label for="passwordRepeat_phone"><i class="am-icon-lock"></i></label>
+                                    <input type="password" v-model="phoneReg.confirmPassword" id="passwordRepeat_phone" placeholder="确认密码">
+                                </div>
+                            </form>
+                            <div class="login-links">
+                                <label for="reader-me_phone">
+                                    <input id="reader-me_phone" :checked="phoneReg.agreement" @click="phoneReg.agreement=!phoneReg.agreement" type="checkbox"> 点击表示您同意商城《服务协议》
+                                </label>
+                            </div>
+                            <div class="am-cf">
+                                <input type="submit" name="" value="注册" class="am-btn am-btn-primary am-btn-sm am-fl">
+                            </div>
+
+                            <hr>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer ">
+        <div class="footer-hd ">
+            <p>
+                <a href="# ">恒望科技</a>
+                <b>|</b>
+                <a href="# ">商城首页</a>
+                <b>|</b>
+                <a href="# ">支付宝</a>
+                <b>|</b>
+                <a href="# ">物流</a>
+            </p>
+        </div>
+        <div class="footer-bd ">
+            <p>
+                <a href="# ">关于恒望</a>
+                <a href="# ">合作伙伴</a>
+                <a href="# ">联系我们</a>
+                <a href="# ">网站地图</a>
+                <em>© 2015-2025 Hengwang.com 版权所有. 更多模板 <a href="http://www.cssmoban.com/" target="_blank"
+                                                           title="模板之家">模板之家</a>
+                    - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></em>
+            </p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //开启选项卡功能
+        $('#doc-my-tabs').tabs();
+    })
+    new Vue({
+        el:"#app",
+        data:{
+            phoneReg:{
+                phone:'',           //手机号
+                verifyCode:'',      //验证码
+                password:'',        //密码
+                confirmPassword:'', //确认密码
+                agreement: false    //勾选同意协议
+            },
+            phoneValidateMsg:''     //手机号验证消息
+        },
+        methods:{
+            validPhone(){
+                if(!/^1[3-9][0-9]{9}$/.test(this.phoneReg.phone)){
+                    this.phoneValidateMsg = "请输入正确的手机号!!";
+                    $("#phone_reg").parent().css("color","red");
+                    return ;
+                }
+                this.$http.get("/lr/validatePhone/"+this.phoneReg.phone)
+                    .then(res=>{
+                        console.log(res);
+                        $("#phone_reg").parent().css("color","green");
+                        this.phoneValidateMsg='';
+                    })
+                    .catch(res=>{
+
+                    })
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
