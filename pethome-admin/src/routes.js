@@ -12,12 +12,19 @@ import echarts from './views/charts/echarts.vue'
 import department from './views/org/Department.vue'
 import employee from './views/org/Employee.vue'
 import shop from './views/org/Shop.vue'
+import SettledIn from './views/user/SettledIn.vue'
 
 let routes = [
     {
         path: '/login',
         component: Login,
-        name: '',
+        name: '登陆页面',
+        hidden: true
+    },
+    {
+        path: '/settledIn',
+        component: SettledIn,
+        name: '商家入住',
         hidden: true
     },
     {

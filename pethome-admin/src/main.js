@@ -24,6 +24,16 @@ Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
+import BaiduMap from 'vue-baidu-map'
+import BmNavigation from 'vue-baidu-map/components/controls/Navigation'　　//　缩放组件
+
+Vue.use(BaiduMap, {
+  ak: 'oVDUBxex0BIjhkiCxo2mNE6zxBX9X4on',
+
+  enableScrollWheelZoom:true,
+
+})
+
 //NProgress.configure({ showSpinner: false });
 
 const router = new VueRouter({

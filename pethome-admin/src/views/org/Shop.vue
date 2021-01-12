@@ -9,9 +9,6 @@
 				<el-form-item>
 					<el-button type="primary" v-on:click="getShops">查询</el-button>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
 			</el-form>
 		</el-col>
 
@@ -29,9 +26,10 @@
 			</el-table-column>
       <el-table-column prop="state" label="状态" width="180" sortable>
         <template scope="scope">
-          <span v-if="scope.row.state == 0" style="color: green">正在营业</span>
-          <span v-else-if="scope.row.state == -1" style="color: green">停业整顿</span>
-          <span v-else="" style="color: green">未知</span>
+          <span v-if="scope.row.state == -1" style="color: green">禁用</span>
+          <span v-if="scope.row.state == 0" style="color: green">正常</span>
+          <span v-if="scope.row.state == 1" style="color: green">待审核</span>
+          <span v-if="scope.row.state == 2" style="color: green">待激活</span>
         </template>
       </el-table-column>
 			<el-table-column prop="logo" label="图标" width="180" sortable>
@@ -40,15 +38,13 @@
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="total,sizes,prev, pager, next" @current-change="handleCurrentChange" @size-change="handleSizeChange"
                      :current-page="page"
                      :page-size="pageSize"
@@ -58,16 +54,19 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑或添加界面-->
-		<el-dialog title="添加或修改" :visible.sync="shopFormVisible" :close-on-click-modal="false">
+		<!--审核-->
+		<el-dialog title="审核" :visible.sync="shopFormVisible" :close-on-click-modal="false">
 			<el-form :model="shopForm" label-width="80px" :rules="shopFormRules" ref="shopForm">
-				<el-form-item label="门店名称" prop="name">
-					<el-input v-model="shopForm.name" auto-complete="off"></el-input>
+        <el-form-item label="门店Logo">
+          <img :src="'http://121.37.194.36/'+shopForm.logo" style="width: 80px;">
+        </el-form-item>
+				<el-form-item label="门店名称">
+					<el-input  v-model="shopForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-        <el-form-item label="门店电话" prop="tel">
+        <el-form-item label="门店电话">
           <el-input v-model="shopForm.tel" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="注册时间" prop="registerTime">
+        <el-form-item label="注册时间">
 <!--          <el-input v-model="shopForm.registerTime" auto-complete="off"></el-input>-->
           <el-date-picker
               v-model="shopForm.registerTime"
@@ -75,10 +74,12 @@
               placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
-				<el-form-item label="state">
+				<el-form-item label="状态">
 					<el-radio-group v-model="shopForm.state">
-						<el-radio class="radio" :label="0">正在营业</el-radio>
-						<el-radio class="radio" :label="-1">停业整顿</el-radio>
+            <span v-if="shopForm.state == -1" style="color: green">禁用</span>
+            <span v-if="shopForm.state == 0" style="color: green">正常</span>
+            <span v-if="shopForm.state == 1" style="color: green">待审核</span>
+            <span v-if="shopForm.state == 2" style="color: green">待激活</span>
 					</el-radio-group>
 				</el-form-item>
         <el-form-item label="门店地址" prop="address">
@@ -148,18 +149,9 @@
         this.getShops();
       },
 
-      /*filters:{//深度监听，可监听到对象、数组的变化
-        handler(newVal, oldVal){
-          console.log(newVal, oldVal);
-        },
-        deep:true //true 深度监听
-      }*/
     },
 		methods: {
-			//性别显示转换state
-			formatSex: function (row, column) {
-				return row.state == 0 ? '启用' : row.state == -1 ? '禁用' : '未知';
-			},
+
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getShops();
@@ -189,39 +181,6 @@
         })
 			},
 
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let url = "/shop/"+row.id
-					this.$http.delete(url)
-              .then(res=>{
-                this.listLoading = false;
-                res = res.data
-                if(res.success){
-                  this.page = 1;
-                  this.$message({
-                    message: res.msg,
-                    type: 'success'
-                  });
-                }else {
-                  this.$message({
-                    message: res.msg,
-                    type: 'error'
-                  });
-                }
-                this.getShops();
-              })
-              .catch(res=>{
-                alert("系统错误")
-              })
-				}).catch(() => {
-
-				});
-			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
 				this.shopFormVisible = true;
@@ -229,21 +188,8 @@
 				this.shopForm = Object.assign({}, row);
 
 			},
-			//显示新增界面
-			handleAdd: function () {
-				this.shopFormVisible = true;
-				this.shopForm = {
-          id: null,
-          name: '',
-          tel:'',
-          registerTime:null,
-          state:0,
-          address:'',
-          logo:'',
-          admin_id:null
-				};
-			},
-			//编辑或添加
+
+			//审核
 			shopSubmit: function () {
 				this.$refs.shopForm.validate((valid) => {
 					if (valid) {
