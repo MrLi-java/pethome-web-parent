@@ -161,8 +161,9 @@
                 this.shop.logo = response.data;
             },
             handleRemove(file, fileList) {
-                var filePath =file.response.resultObj;
-                this.$http.delete("/common/fastDfs/?path="+filePath)
+                var filePath =file.response.data;
+                console.log(filePath);
+                this.$http.delete("/fastdfs/delete/?path="+filePath)
                     .then(res=>{
                         if(res.data.success){
                             this.$message({
@@ -222,10 +223,41 @@
                         });
                     }
                 })
-            }
-        }
-    }
+            },
+          getShops(){
+            let path = window.location.href;
 
+            let id = path.split("?")[1].split("=")[1];
+            console.log(id)
+            this.$http.get("/shop/"+id)
+                .then(result=>{
+                  result = result.data;
+                  console.log(result);
+                  this.shop.name=result.name;
+                  this.shop.tel=result.tel;
+                  this.shop.address = result.address;
+                  this.shop.logo=result.logo;
+                  this.fileList=[
+                    {
+                      name:'',
+                      url:'http://121.37.194.36'+result.logo
+                    }
+                  ]
+                  this.shop.username=result.admin.username;
+                  this.shop.phone=result.admin.phone;
+                  this.shop.email=result.admin.email;
+                  this.shop.password=result.admin.password;
+                  this.shop.comfirmPassword=result.admin.password;
+                })
+                .catch(result=>{
+                  alert("系统错误！！")
+                })
+          }
+        },
+      mounted() {
+          this.getShops();
+      }
+    }
 </script>
 
 <style lang="scss" scoped>

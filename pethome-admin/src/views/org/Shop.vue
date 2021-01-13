@@ -33,12 +33,15 @@
         </template>
       </el-table-column>
 			<el-table-column prop="logo" label="图标" width="180" sortable>
+        <template scope="scope">
+          <el-avatar :src="'http://121.37.194.36'+scope.row.logo"></el-avatar>
+        </template>
       </el-table-column>
 			<el-table-column prop="admin_id" label="管理员" width="180" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
+					<el-button size="small" :disabled="scope.row.state!=1" @click="handleEdit(scope.$index, scope.row)">审核</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -57,36 +60,44 @@
 		<!--审核-->
 		<el-dialog title="审核" :visible.sync="shopFormVisible" :close-on-click-modal="false">
 			<el-form :model="shopForm" label-width="80px" :rules="shopFormRules" ref="shopForm">
-        <el-form-item label="门店Logo">
-          <img :src="'http://121.37.194.36/'+shopForm.logo" style="width: 80px;">
+        <el-form-item label="门店Logo:">
+          <img :src="'http://121.37.194.36'+shopForm.logo" style="width: 80px;">
         </el-form-item>
-				<el-form-item label="门店名称">
+				<el-form-item label="门店名称:">
 					<el-input  v-model="shopForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-        <el-form-item label="门店电话">
+        <el-form-item label="门店电话:">
           <el-input v-model="shopForm.tel" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="注册时间">
+        <el-form-item label="注册时间:">
 <!--          <el-input v-model="shopForm.registerTime" auto-complete="off"></el-input>-->
           <el-date-picker
               v-model="shopForm.registerTime"
               type="date"
-              placeholder="选择日期">
+              placeholder="选择日期:">
           </el-date-picker>
         </el-form-item>
-				<el-form-item label="状态">
-					<el-radio-group v-model="shopForm.state">
+				<el-form-item label="状态:">
             <span v-if="shopForm.state == -1" style="color: green">禁用</span>
             <span v-if="shopForm.state == 0" style="color: green">正常</span>
             <span v-if="shopForm.state == 1" style="color: green">待审核</span>
             <span v-if="shopForm.state == 2" style="color: green">待激活</span>
-					</el-radio-group>
 				</el-form-item>
-        <el-form-item label="门店地址" prop="address">
+        <el-form-item label="门店地址:" prop="address">
           <el-input v-model="shopForm.address" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="管理员" prop="admin_id">
+        <el-form-item label="管理员:" prop="admin_id">
           <el-input v-model="shopForm.admin_id" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="审核操作:">
+          <el-radio-group v-model="radio">
+            <el-radio  :label="1">不通过</el-radio>
+            <el-radio  :label="2">驳回</el-radio>
+            <el-radio  :label="3">通过</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="审核信息">
+          <el-input type="textarea" :rows="2" v-model="shopForm.auditMsg"></el-input>
         </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -110,6 +121,7 @@
 				filters: {
           keyWord: ''
 				},
+        radio:3,
 				shops: [],
 				total: 0,
 				page: 1,
@@ -136,7 +148,9 @@
           state:0,
           address:'',
           logo:'',
-          admin_id:null
+          admin_id:null,
+          type:0,
+          auditMsg:''
         },
 
 
@@ -181,90 +195,39 @@
         })
 			},
 
-			//显示编辑界面
+			//显示审核界面
 			handleEdit: function (index, row) {
 				this.shopFormVisible = true;
-        this.$refs['shopForm'].resetFields();//重置表单校验
 				this.shopForm = Object.assign({}, row);
-
 			},
 
 			//审核
 			shopSubmit: function () {
-				this.$refs.shopForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+						this.$confirm('确认提交审核么吗？', '提示', {}).then(() => {
 							this.shopLoading = true;
 							//NProgress.start();
-							let para = Object.assign({}, this.shopForm);
-              para.registerTime = (!para.registerTime || para.registerTime == '') ? '' : util.formatDate.format(new Date(para.registerTime), 'yyyy-MM-dd');
-
-              this.$http.put("/shop",para)
+              this.shopForm.type = this.radio;
+              this.$http.get("/shop/"+this.shopForm.id+"/"+this.shopForm.type+"/"+this.shopForm.auditMsg)
                   .then(result=>{
                     result = result.data;
-                    if(result.success){
-                      this.$message({
-                        message: '提交成功',
-                        type: 'success'
-                      });
-                    }else {
-                      this.$message({
-                        message: '提交失败',
-                        type: 'error'
-                      });
+                    if(result.success){//true
+                      //this.$message.success(result.message);
+                      this.page = 1;//定位第一页
+                      this.getShops();//刷新页面
+                      this.shopFormVisible = false;  //关闭模态框
+                    }else{//false
+                      this.$message.error(result.message);
                     }
-                    this.page=1
-                    this.shopLoading = false;
-                    this.$refs['shopForm'].resetFields();
-                    this.shopFormVisible = false;
-                    this.getShops();
                   })
                   .catch(result=>{
                     alert("系统错误！！！")
                   })
 						});
-					}
-				});
 			},
 
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id);
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					// let para = { ids: ids };
-					// console.log(para)
-					this.$http.patch("/shop", ids)
-              .then(res=>{
-                res = res.data;
-                if(res.success){
-                  this.$message({
-                    message: res.msg,
-                    type: 'success'
-                  });
-                }else{
-                  this.$message({
-                    message: res.msg,
-                    type: 'error'
-                  });
-                }
-                this.listLoading=false;
-                this.page=1;
-                this.getShops();
-              })
-              .catch(res=>{
-                alert("系统错误！！！")
-              })
-				}).catch(() => {
-
-				});
-			}
 		},
 		mounted() {
 			this.getShops();
