@@ -20,6 +20,12 @@
     <script src="./plugins/vue/dist/vue.js"></script>
     <script src="./plugins/axios/dist/axios.js"></script>
     <script src="./js/common.js"></script>
+
+    <style type="text/css">
+        #dyMobileButton:disabled{
+            cursor: no-drop;
+        }
+    </style>
 </head>
 
 <body>
@@ -65,14 +71,14 @@
                             <form method="post" >
                                 <div class="user-phone">
                                     <label for="phone_reg"><i class="am-icon-mobile-phone am-icon-md"></i></label>
-                                    <input type="tel"  id="phone_reg" placeholder="请输入手机号">
-                                    <span class="validateMsg"></span>
+                                    <input type="tel" @blur="validPhone" v-model="phoneLog.phone" id="phone_reg" placeholder="请输入手机号">
+                                    <span class="validateMsg">{{phoneValidateMsg}}</span>
                                 </div>
                                 <div class="verification">
                                     <label for="code"><i class="am-icon-code-fork"></i></label>
-                                    <input type="tel"  id="code" placeholder="请输入验证码">
-                                    <button class="btn" type="button"  id="dyMobileButton">
-                                        获取
+                                    <input type="tel" v-model="phoneLog.verifyCode"  id="code" placeholder="请输入验证码">
+                                    <button class="btn" type="button" :disabled="btnDisabled" @click="sendMobileCode" id="dyMobileButton">
+                                        {{btnText}}
                                     </button>
                                 </div>
                             </form>
@@ -81,7 +87,7 @@
                                 <br/>
                             </div>
                             <div class="am-cf">
-                                <input type="submit" name="" value="登 录" class="am-btn am-btn-primary am-btn-sm">
+                                <input type="button" @click="phoneLogin"  value="登 录" class="am-btn am-btn-primary am-btn-sm">
                             </div>
                         </div>
                     </div>
@@ -138,7 +144,16 @@
                 password:"",
                 rememberMe: false,
                 type:'front'
-            }
+            },
+            phoneLog: {
+                phone:'',           //手机号
+                verifyCode:'',      //验证码
+                type:'phone_login'  //当前为手机验证码登录
+            },
+            phoneValidateMsg:'',
+            btnText:'获取',
+            btnDisabled:false,
+            phoneValidateResult:false
         },
         methods:{
             //用户登录
@@ -156,6 +171,75 @@
                         alert(msg);
                     }
                 })
+            },
+            validPhone(){
+                if(!/^1[3-9][0-9]{9}$/.test(this.phoneLog.phone)){
+                    this.phoneValidateMsg = "请输入正确的手机号!!";
+                    $("#phone_reg").parent().css("color","red");
+                    this.btnDisabled = true;
+                    return false;
+                }
+                this.$http.get("/lr/validatePhone/"+this.phoneLog.type+"/"+this.phoneLog.phone)
+                    .then(res=>{
+                        let {success,msg} = res.data;
+                        if(success){
+                            $("#phone_reg").parent().css("color","green");
+                            this.phoneValidateMsg='';
+                            this.phoneValidateResult=true;
+                            this.btnDisabled = false;
+                        }else {
+                            $("#phone_reg").parent().css("color","red");
+                            this.phoneValidateMsg=msg;
+                            this.phoneValidateResult=false;
+                            this.btnDisabled=true;
+                        }
+                    })
+                    .catch(res=>{
+                        alert("系统错误!!");
+                    })
+                return this.phoneValidateResult;
+            },
+            sendMobileCode(){
+                this.btnDisabled = true;
+                let time = 5;
+                this.btnText = time;
+                let intervalId = setInterval(()=>{
+                    time--;
+                    this.btnText = time;
+                    if(time<=0){
+                        clearInterval(intervalId)  ;     //取消时间间隔
+                        this.btnDisabled = false;
+                        this.btnText="获取";
+                    }
+                },1000);
+                this.$http.get("/lr/sendMobileCode/"+this.phoneLog.type+"/"+this.phoneLog.phone)
+                    .then(res=>{
+                        let {success,msg} = res.data;
+                        alert(msg);
+                    })
+                    .catch(res=>{
+                        alert("系统错误")
+                    })
+            },
+            phoneLogin(){
+                    this.$http.post("/lr/phoneLogin",this.phoneLog)
+                        .then(res=>{
+                            let {success,msg,data} = res.data;
+                            console.log(data);
+                            if(success){
+                                //console.log(data);
+                                sessionStorage.setItem("userToken",data.userToken);
+                                sessionStorage.setItem("loginUser",data.loginUser);
+
+                                location.href = '/index.html'
+                            }else{
+                                alert(msg);
+                            }
+                        })
+                        .catch(res=>{
+                            alert("系统错误！！")
+                        })
+
             }
         }
     })

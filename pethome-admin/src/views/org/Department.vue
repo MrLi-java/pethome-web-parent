@@ -340,7 +340,7 @@
 				});
 			},
       getEmployees(){
-			  this.$http.get("/employee")
+			  this.$http.get("/util/employee")
             .then(result=>{
               if(result){
                 this.employees = result.data;

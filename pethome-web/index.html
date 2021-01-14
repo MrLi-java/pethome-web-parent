@@ -35,10 +35,12 @@
         <div class="am-container header">
             <ul class="message-l">
                 <div class="topMessage">
-                    <div class="menu-hd">
+                    <div class="menu-hd" v-if="isLogined"><!--登录后展示用户名-->
+                        <span>欢迎你，{{loginUser.username}}</span>
+                    </div>
+                    <div class="menu-hd" v-if="!isLogined">
                         <a href="login.html" target="_top" class="h">亲，请登录</a>
                         <a href="register.html" target="_top">免费注册</a>
-                        <a href="javascript:void(0);" @click="userLoginTest">测试链接</a>
                     </div>
                 </div>
             </ul>
@@ -790,15 +792,20 @@
 
                         <div class="mod-vip">
                             <div class="m-baseinfo">
-                                <a href="./person/index.html">
+                                <a href="./person/index.html" v-if="isLogined"><!-- 登录后展示头像 -->
+                                    <!-- 用户对象headImg非空才展示，否则展示默认头像 -->
+                                    <img :src="loginUser.headImg" v-if="loginUser.headImg"/>
+                                    <img src="./images/getAvatar.do.jpg" v-else/>
+                                </a>
+                                <a href="javascript:void(0);" v-if="!isLogined"><!-- 未登录时展示默认头像 -->
                                     <img src="./images/getAvatar.do.jpg">
                                 </a>
                                 <em>
-                                    Hi,<span class="s-name">小叮当</span>
+                                    Hi,<span class="s-name">{{loginUser.username}}</span>
                                     <a href="#"><p>点击更多优惠活动</p></a>
                                 </em>
                             </div>
-                            <div class="member-logout">
+                            <div class="member-logout" v-if="!isLogined">
                                 <a class="am-btn-warning btn" href="login.html">登录</a>
                                 <a class="am-btn-warning btn" href="register.html">注册</a>
                             </div>
@@ -1525,13 +1532,28 @@
     new Vue({
         el:"#app",
         data:{
-
+            isLogined:false,        //是否已登录
+            loginUser:{}            //当前登录用户对象
         },
         methods:{
             userLoginTest(){
                 this.$http.post("/xxx/zz").then(res=>{
                     console.log(res.data)
                 })
+            },
+
+        },
+        mounted(){
+            //页面挂载完毕时 从localStorage中获取userToken和loginUser
+            let userToken = sessionStorage.getItem("userToken")
+            let loginUser = sessionStorage.getItem("loginUser")
+            console.debug("userToken",userToken)
+            console.debug("loginUser",loginUser)
+            //userToken 和 loginUser 同时非空 才表示已登录
+            if(loginUser && userToken){
+                this.isLogined = true                       //设置成已登录
+                this.loginUser = JSON.parse(loginUser)      //将loginUser的json字符串转化为对象后赋值给Vue对象的属性
+                console.debug(this.loginUser)
             }
         }
     })
