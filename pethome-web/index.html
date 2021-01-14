@@ -18,6 +18,11 @@
 
     <script src="./AmazeUI-2.4.2/assets/js/jquery.min.js"></script>
     <script src="./AmazeUI-2.4.2/assets/js/amazeui.min.js"></script>
+
+    <!-- 导入vue和axios的js文件 -->
+    <script src="./plugins/vue/dist/vue.js"></script>
+    <script src="./plugins/axios/dist/axios.js"></script>
+    <script src="./js/common.js"></script>
     
 
 </head>
@@ -31,8 +36,9 @@
             <ul class="message-l">
                 <div class="topMessage">
                     <div class="menu-hd">
-                        <a href="#" target="_top" class="h">亲，请登录</a>
+                        <a href="login.html" target="_top" class="h">亲，请登录</a>
                         <a href="register.html" target="_top">免费注册</a>
+                        <a href="javascript:void(0);" @click="userLoginTest">测试链接</a>
                     </div>
                 </div>
             </ul>
@@ -1516,6 +1522,19 @@
     }
 </script>
 <script type="text/javascript">
-    
+    new Vue({
+        el:"#app",
+        data:{
+
+        },
+        methods:{
+            userLoginTest(){
+                this.$http.post("/xxx/zz").then(res=>{
+                    console.log(res.data)
+                })
+            }
+        }
+    })
 </script>
+
 </html>
