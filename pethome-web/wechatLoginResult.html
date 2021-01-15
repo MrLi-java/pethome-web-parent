@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信登录结果</title>
+    <!-- 导入vue和axios的js文件 -->
+    <script src="./plugins/vue/dist/vue.js"></script>
+    <script src="./plugins/axios/dist/axios.js"></script>
+    <script src="./js/common.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h2>你好骚，我好喜欢！！！</h2>
+    </div>
+    <script type="text/javascript">
+        new Vue({
+            el:"#app",
+            data:{
+
+            },
+            methods:{
+
+            },
+            mounted(){
+                let code = getParameter("code");
+                //发送ajax请求到我们后端项目接口中，传递这个code参数
+                this.$http.get("/lr/wechatLogin/"+code).then(res=>{
+                    console.debug(res.data);
+                    let {success,msg,data} = res.data
+                    if(success){
+                        //成功了就保存到sessionStorage中，然后跳转到首页
+                        sessionStorage.setItem("userToken", data.userToken)
+                        sessionStorage.setItem("loginUser", data.loginUser)
+                        location.href = '/index.html'
+                    }else if(msg === 'unbind'){
+                        //未绑定，就跳转到绑定页面
+                        location.href = '/wechatUserBind.html?access_token=' + data.access_token+"&openid="+data.openid;
+                    }else{
+                        alert(msg);
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>

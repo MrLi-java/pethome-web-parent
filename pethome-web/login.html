@@ -96,7 +96,7 @@
                         <div class="am-btn-group">
                             <li><a href="#"><i class="am-icon-qq am-icon-sm"></i><span>QQ登录</span></a></li>
                             <li><a href="#"><i class="am-icon-weibo am-icon-sm"></i><span>微博登录</span> </a></li>
-                            <li><a href="#"><i class="am-icon-weixin am-icon-sm"></i><span>微信登录</span> </a></li>
+                            <li><a href="javascript:void(0);" @click="wechatLogin"><i class="am-icon-weixin am-icon-sm"></i><span>微信登录</span> </a></li>
                         </div>
                     </div>
                 </div>
@@ -145,6 +145,9 @@
                 rememberMe: false,
                 type:'front'
             },
+            appid: 'wxd853562a0548a7d0',        //APPID
+            callback: 'bugtracker.itsource.cn', //回调域名
+            wechatUrl: 'https://open.weixin.qq.com/connect/qrconnect?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect',
             phoneLog: {
                 phone:'',           //手机号
                 verifyCode:'',      //验证码
@@ -240,6 +243,13 @@
                             alert("系统错误！！")
                         })
 
+            },
+            //微信登录
+            wechatLogin(){
+                let wechatUrl = this.wechatUrl
+                    .replace("APPID", this.appid)
+                    .replace("REDIRECT_URI", "http://" + this.callback + "/wechatLoginResult.html");
+                location.href = wechatUrl;
             }
         }
     })

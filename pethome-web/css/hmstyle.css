@@ -713,8 +713,9 @@ filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr='#f8c375',endCo
 .member-logout{height: 25px;overflow: hidden;display: block;}
 .member-logout .btn{width:95px;margin-right:3px;height: 25px;display: inline-block;line-height: 25px;text-align: center;}
 
-.member-login{overflow: hidden;height:36px;display: none;}
-.member-login a {float: left;margin-left: -1px;width:50px;text-align: center;border-left: 1px solid #EEE;}
+.member-login{overflow: hidden;height:36px;display: block;margin-top: 10px;}
+.member-login a {display: block;float: left;margin-left: -1px;width:50px;text-align: center;border-left: 1px solid #EEE;}
+.member-login a:hover{background-color: #e7eae0;}
 .member-login a strong {height: 18px;display: block;font-size: 14px;color: #F40;}
     
 .advTip{display:block;width:100% ;position: absolute;bottom:2px;left:0px}    

@@ -35,3 +35,20 @@ axios.interceptors.response.use(result=>{
 },error => {
     Promise.reject(error);
 })
+
+
+/**
+ * 通过参数名称获取浏览器地址栏中的GET请求参数
+ * @param name
+ */
+function getParameter(name){
+    let url = location.href;        //获取地址栏的内容
+    url = url.substring(url.indexOf("?") + 1);  //截取?后面的字符串
+    let params = url.split("&");    //以&拆分字符串,得到数组   参数名称=参数值
+    for(let i=0;i<params.length;i++){
+        if(params[i].split("=")[0] === name){
+            return params[i].split("=")[1]
+        }
+    }
+    return null;
+}
