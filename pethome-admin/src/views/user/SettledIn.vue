@@ -154,15 +154,12 @@
                 this.dialogVisable = true;
             },
             handleSuccess(response, file, fileList){
-                console.log("===========")
-                console.log(response);
                 console.log(file);
                 console.log(fileList);
                 this.shop.logo = response.data;
             },
             handleRemove(file, fileList) {
                 var filePath =file.response.data;
-                console.log(filePath);
                 this.$http.delete("/fastdfs/delete/?path="+filePath)
                     .then(res=>{
                         if(res.data.success){

@@ -13,6 +13,7 @@ import department from './views/org/Department.vue'
 import employee from './views/org/Employee.vue'
 import shop from './views/org/Shop.vue'
 import SettledIn from './views/user/SettledIn.vue'
+import Product from './views/product/Product'
 
 let routes = [
     {
@@ -58,11 +59,10 @@ let routes = [
     {
         path: '/',
         component: Home,
-        name: '导航二',
+        name: '商品服务管理',
         iconCls: 'fa fa-id-card-o',
         children: [
-            { path: '/page4', component: Page4, name: '页面4' },
-            { path: '/page5', component: Page5, name: '页面5' }
+            { path: '/product', component: Product, name: '商品服务管理' },
         ]
     },
     {

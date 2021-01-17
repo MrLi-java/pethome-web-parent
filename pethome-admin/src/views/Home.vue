@@ -11,7 +11,7 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
+					<span class="el-dropdown-link userinfo-inner"><img :src="'http://121.37.194.36'+loginUser.headImg" /> {{loginUser.username}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
 						<el-dropdown-item>设置</el-dropdown-item>
@@ -88,7 +88,12 @@
 					type: [],
 					resource: '',
 					desc: ''
-				}
+				},
+        loginUser:{
+				  username:'',
+          headImg:'',
+          type:'admin_logout'
+        }
 			}
 		},
 		methods: {
@@ -109,8 +114,11 @@
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user');
-					_this.$router.push('/login');
+					this.$http.post("/lr/logout",this.loginUser).then(res=>{
+            sessionStorage.removeItem('loginUser');
+            sessionStorage.removeItem('userToken');
+            _this.$router.push('/login');
+          })
 				}).catch(() => {
 
 				});
@@ -126,13 +134,10 @@
 			}
 		},
 		mounted() {
-			var user = sessionStorage.getItem('user');
-			if (user) {
-				user = JSON.parse(user);
-				this.sysUserName = user.name || '';
-				this.sysUserAvatar = user.avatar || '';
-			}
+			let user = JSON.parse(sessionStorage.getItem('loginUser'));
 
+      this.loginUser.username=user.username;
+      this.loginUser.headImg=user.headImg;
 		}
 	}
 
