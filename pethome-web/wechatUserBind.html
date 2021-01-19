@@ -273,8 +273,8 @@
                         .then(res=>{
                             let {success,msg,data} = res.data
                             if(success){
-                                sessionStorage.setItem("userToken", data.userToken)
-                                sessionStorage.setItem("loginUser", data.loginUser)
+                                localStorage.setItem("userToken", data.userToken)
+                                localStorage.setItem("loginUser", data.loginUser)
                                 location.href = '/index.html'
                             }else{
                                 alert(msg);
@@ -292,8 +292,8 @@
                         .then(res=>{
                             let {success,msg,data} = res.data
                             if(success){
-                                sessionStorage.setItem("userToken", data.userToken)
-                                sessionStorage.setItem("loginUser", data.loginUser)
+                                localStorage.setItem("userToken", data.userToken)
+                                localStorage.setItem("loginUser", data.loginUser)
                                 location.href = '/index.html'
                             }else{
                                 alert(msg);

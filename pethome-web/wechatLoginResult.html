@@ -28,9 +28,9 @@
                     console.debug(res.data);
                     let {success,msg,data} = res.data
                     if(success){
-                        //成功了就保存到sessionStorage中，然后跳转到首页
-                        sessionStorage.setItem("userToken", data.userToken)
-                        sessionStorage.setItem("loginUser", data.loginUser)
+                        //成功了就保存到localStorage中，然后跳转到首页
+                        localStorage.setItem("userToken", data.userToken)
+                        localStorage.setItem("loginUser", data.loginUser)
                         location.href = '/index.html'
                     }else if(msg === 'unbind'){
                         //未绑定，就跳转到绑定页面

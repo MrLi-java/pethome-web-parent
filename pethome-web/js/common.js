@@ -2,6 +2,7 @@
 axios.defaults.baseURL='http://localhost:8080'
 //全局属性配置，在任意组件内可以使用this.$http获取axios对象
 Vue.prototype.$http = axios
+Vue.prototype.fastdfsHost = 'http://121.37.194.36'
 
 /**
  * axios的请求拦截器:
@@ -9,7 +10,7 @@ Vue.prototype.$http = axios
  */
 axios.interceptors.request.use(config=>{
     //携带token
-    let userToken =  sessionStorage.getItem("userToken");
+    let userToken =  localStorage.getItem("userToken");
     if(userToken){
         config.headers['userToken'] = userToken;
     }

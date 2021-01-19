@@ -166,8 +166,8 @@
 
                     if(success){
                         //console.log(data);
-                        sessionStorage.setItem("userToken",data.userToken);
-                        sessionStorage.setItem("loginUser",data.loginUser);
+                        localStorage.setItem("userToken",data.userToken);
+                        localStorage.setItem("loginUser",data.loginUser);
 
                         location.href = '/index.html'
                     }else{
@@ -231,8 +231,8 @@
                             console.log(data);
                             if(success){
                                 //console.log(data);
-                                sessionStorage.setItem("userToken",data.userToken);
-                                sessionStorage.setItem("loginUser",data.loginUser);
+                                localStorage.setItem("userToken",data.userToken);
+                                localStorage.setItem("loginUser",data.loginUser);
 
                                 location.href = '/index.html'
                             }else{

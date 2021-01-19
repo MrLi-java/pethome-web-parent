@@ -53,9 +53,9 @@
                     </div>
                 </div>
                 <div class="topMessage mini-cart">
-                    <div class="menu-hd"><a id="mc-menu-hd" href="#" target="_top"><i
+                    <div class="menu-hd"><a id="mc-menu-hd" href="shopcart.html" target="_top"><i
                             class="am-icon-shopping-cart  am-icon-fw"></i><span>购物车</span><strong id="J_MiniCartNum"
-                                                                                                  class="h">0</strong></a>
+                                                                                                  class="h">{{buycount}}</strong></a>
                     </div>
                 </div>
                 <div class="topMessage favorite">
@@ -108,7 +108,7 @@
             <div class="nav-cont">
                 <ul>
                     <li class="index"><a href="#">首页</a></li>
-                    <li class="qc"><a href="#">闪购</a></li>
+                    <li class="qc"><a href="product.html">商品服务</a></li>
                     <li class="qc"><a href="#">限时抢</a></li>
                     <li class="qc"><a href="#">团购</a></li>
                     <li class="qc last"><a href="#">大包装</a></li>
@@ -1360,13 +1360,13 @@
 
                 </div>
                 <div id="shopCart " class="item ">
-                    <a href="# ">
+                    <a href="shopcart.html">
                         <span class="message "></span>
                     </a>
                     <p>
                         购物车
                     </p>
-                    <p class="cart_num ">0</p>
+                    <p class="cart_num ">{{buycount}}</p>
                 </div>
                 <div id="asset " class="item ">
                     <a href="# ">
@@ -1545,19 +1545,20 @@
             userForm:{
                 userToken:'',
                 type:'user_logout'
-            }
+            },
+            buycount:0,
         },
         methods:{
             logout(){
-                 this.userForm.userToken = sessionStorage.getItem("userToken");
+                 this.userForm.userToken = localStorage.getItem("userToken");
 
                 this.$http.post("/lr/userLogout",this.userForm)
                     .then(res=>{
                         let {success,msg} = res.data
                         if(success){
                             //成功了就删除到essionStorage中的数据，然后跳转到index.html页面
-                            sessionStorage.removeItem("userToken");
-                            sessionStorage.removeItem("loginUser");
+                            localStorage.removeItem("userToken");
+                            localStorage.removeItem("loginUser");
                             location.href = '/index.html'
                         }else{
                             alert(msg);
@@ -1571,14 +1572,20 @@
         },
         mounted(){
             //页面挂载完毕时 从localStorage中获取userToken和loginUser
-            let userToken = sessionStorage.getItem("userToken")
-            let loginUser = sessionStorage.getItem("loginUser")
+            let userToken = localStorage.getItem("userToken")
+            let loginUser = localStorage.getItem("loginUser")
 
             //userToken 和 loginUser 同时非空 才表示已登录
             if(loginUser && userToken){
                 this.isLogined = true                       //设置成已登录
                 this.loginUser = JSON.parse(loginUser)      //将loginUser的json字符串转化为对象后赋值给Vue对象的属性
-                console.log(this.loginUser);
+            }
+
+            if(localStorage.getItem("loginUser")){
+                this.$http.put("/shopcart/counts").then(res=>{
+                    console.log(res)
+                    this.buycount = res.data;
+                })
             }
         }
     })
