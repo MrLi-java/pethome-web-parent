@@ -113,8 +113,8 @@
                     <li class="qc"><a href="#">团购</a></li>
                     <li class="qc last"><a href="#">大包装</a></li>
                 </ul>
-                <div class="nav-extra">
-                    <i class="am-icon-user-secret am-icon-md nav-user"></i><b></b>我的福利
+                <div class="nav-extra" @click="publishAdopt">
+                    <i class="am-icon-user-secret am-icon-md nav-user"></i><b></b>发布寻主消息
                     <i class="am-icon-angle-right" style="padding-left: 10px;"></i>
                 </div>
             </div>
@@ -1567,6 +1567,10 @@
                     .catch(res=>{
                         alert("系统错误！！！！");
                     })
+            },
+
+            publishAdopt(){
+                window.open("publish.html","_blank")
             }
 
         },

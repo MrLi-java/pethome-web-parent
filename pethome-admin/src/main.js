@@ -34,6 +34,8 @@ Vue.use(BaiduMap, {
 
 })
 
+Vue.prototype.fastdfsHost = 'http://121.37.194.36'
+
 //NProgress.configure({ showSpinner: false });
 
 const router = new VueRouter({

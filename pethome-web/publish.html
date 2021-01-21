@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, pet-scalable=0">
+
+    <title>发布寻主信息</title>
+
+    <link href="./AmazeUI-2.4.2/assets/css/admin.css" rel="stylesheet" type="text/css">
+    <link href="./AmazeUI-2.4.2/assets/css/amazeui.css" rel="stylesheet" type="text/css">
+
+    <link href="./css/personal.css" rel="stylesheet" type="text/css">
+    <link href="./css/infstyle.css" rel="stylesheet" type="text/css">
+    <script src="./AmazeUI-2.4.2/assets/js/jquery.min.js"></script>
+    <script src="./AmazeUI-2.4.2/assets/js/amazeui.js"></script>
+
+    <!-- 导入vue和axios的js文件 -->
+    <script src="./plugins/vue/dist/vue.js"></script>
+    <script src="./plugins/axios/dist/axios.js"></script>
+    <script src="./js/common.js"></script>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=SK2NZQeNFpBl2pnIGWSk8G7SMOZGQ3Gz"></script>
+</head>
+
+<body>
+<div id="app">
+    <!--头 -->
+    <header>
+        <article>
+            <div class="mt-logo">
+                <!--顶部导航条 -->
+                <div class="am-container header">
+                    <ul class="message-l">
+                        <div class="topMessage">
+                            <div class="menu-hd">
+                                <a href="#" target="_top" class="h">亲，请登录</a>
+                                <a href="#" target="_top">免费注册</a>
+                            </div>
+                        </div>
+                    </ul>
+                    <ul class="message-r">
+                        <div class="topMessage home">
+                            <div class="menu-hd"><a href="#" target="_top" class="h">商城首页</a></div>
+                        </div>
+                        <div class="topMessage my-shangcheng">
+                            <div class="menu-hd MyShangcheng"><a href="#" target="_top"><i
+                                    class="am-icon-pet am-icon-fw"></i>个人中心</a></div>
+                        </div>
+                        <div class="topMessage mini-cart">
+                            <div class="menu-hd"><a id="mc-menu-hd" href="#" target="_top"><i
+                                    class="am-icon-shopping-cart  am-icon-fw"></i><span>购物车</span><strong
+                                    id="J_MiniCartNum" class="h">0</strong></a></div>
+                        </div>
+                        <div class="topMessage favorite">
+                            <div class="menu-hd"><a href="#" target="_top"><i
+                                    class="am-icon-heart am-icon-fw"></i><span>收藏夹</span></a></div>
+                        </div>
+                    </ul>
+                </div>
+                <!--悬浮搜索框-->
+
+                <div class="nav white">
+                    <div class="logoBig">
+                        <li><img src="./images/logobig.png"/></li>
+                    </div>
+
+                    <div class="search-bar pr">
+                        <a name="index_none_header_sysc" href="#"></a>
+                        <form>
+                            <input id="searchInput" name="index_none_header_sysc" type="text" placeholder="搜索"
+                                   autocomplete="off">
+                            <input id="ai-topsearch" class="submit am-btn" value="搜索" index="1" type="submit">
+                        </form>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </article>
+    </header>
+    <div class="nav-table">
+        <div class="long-title"><span class="all-goods">全部分类</span></div>
+        <div class="nav-cont">
+            <ul>
+                <li class="index"><a href="#">首页</a></li>
+                <li class="qc"><a href="#">闪购</a></li>
+                <li class="qc"><a href="#">限时抢</a></li>
+                <li class="qc"><a href="#">团购</a></li>
+                <li class="qc last"><a href="#">大包装</a></li>
+            </ul>
+            <div class="nav-extra">
+                <i class="am-icon-pet-secret am-icon-md nav-pet"></i><b></b>我的福利
+                <i class="am-icon-angle-right" style="padding-left: 10px;"></i>
+            </div>
+        </div>
+    </div>
+    <b class="line"></b>
+    <div class="center">
+        <div class="col-main">
+            <div class="main-wrap">
+
+                <div class="pet-info">
+                    <!--个人信息 -->
+                    <div class="info-main">
+                        <form class="am-form am-form-horizontal" :model="adopt">
+                            <div class="am-form-group">
+                                <label for="pet-title" class="am-form-label">标题</label>
+                                <div class="am-form-content">
+                                    <input type="text" v-model="adopt.title" id="pet-title" placeholder="title">
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="pet-name" class="am-form-label">昵称</label>
+                                <div class="am-form-content">
+                                    <input type="text" v-model="adopt.name" id="pet-name" placeholder="name">
+
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label class="am-form-label">性别</label>
+                                <div class="am-form-content sex">
+                                    <label class="am-radio-inline">
+                                        <input checked="checked" v-model="adopt.gender" type="radio" name="radio10"
+                                               value="1" data-am-ucheck> 公
+                                    </label>
+                                    <label class="am-radio-inline">
+                                        <input type="radio" v-model="adopt.gender" name="radio10" value="0"
+                                               data-am-ucheck> 母
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="pet-age" class="am-form-label">年龄</label>
+                                <div class="am-form-content">
+                                    <input type="text" v-model="adopt.age" id="pet-age" placeholder="age">
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label for="pet-price" class="am-form-label">价格</label>
+                                <div class="am-form-content">
+                                    <input type="text" v-model="adopt.price" id="pet-price" placeholder="price">
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label for="pet-coat_color" class="am-form-label">毛色</label>
+                                <div class="am-form-content">
+                                    <select v-model="adopt.coat_color" id="pet-coat_color">
+                                        <option :value="null">请选择宠物毛色</option>
+                                        <option v-for="cc in coat_colors" :value="cc.id">{{cc.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="pet-type" class="am-form-label">品种</label>
+                                <div class="am-form-content">
+                                    <select v-model="adopt.pet_type" id="pet-type">
+                                        <option :value="null">请选择宠物品种</option>
+                                        <option v-for="cc in pet_types " :value="cc.id">{{cc.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--private String resources;-->
+                            <div class="am-form-group am-form-file">
+                                <label class="am-form-label">图片</label>
+                                <div class="am-form-content">
+                                    <button type="button" class="am-btn am-btn-danger am-btn-sm">
+                                        <i class="am-icon-cloud-upload"></i> 选择要上传的文件
+                                    </button>
+                                    <input id="doc-form-file" @change="uploadImg" type="file" multiple>
+                                </div>
+                            </div>
+                            <div id="file-list"></div>
+
+                            <!--private String address;-->
+                            <div class="am-form-group">
+                                <label class="am-form-label" for="address">地址</label>
+                                <div class="am-form-content">
+                                    <input type="text" id="address" v-model="adopt.address" placeholder="请输入地址">
+                                </div>
+                            </div>
+
+                            <div class="info-btn">
+                                <div class="am-btn am-btn-danger" @click="submitAdopt">保存修改</div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+            <!--底部-->
+            <div class="footer">
+                <div class="footer-hd">
+                    <p>
+                        <a href="#">恒望科技</a>
+                        <b>|</b>
+                        <a href="#">商城首页</a>
+                        <b>|</b>
+                        <a href="#">支付宝</a>
+                        <b>|</b>
+                        <a href="#">物流</a>
+                    </p>
+                </div>
+                <div class="footer-bd">
+                    <p>
+                        <a href="#">关于恒望</a>
+                        <a href="#">合作伙伴</a>
+                        <a href="#">联系我们</a>
+                        <a href="#">网站地图</a>
+                        <em>© 2015-2025 Hengwang.com 版权所有. 更多模板 <a href="http://www.cssmoban.com/" target="_blank"
+                                                                   title="模板之家">模板之家</a> - Collect from <a
+                                href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></em>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#doc-form-file').on('change', function () {
+            var fileNames = '';
+            $.each(this.files, function () {
+                fileNames += '<span class="am-badge">' + this.name + '</span> ';
+            });
+            $('#file-list').html(fileNames);
+        });
+
+
+    });
+</script>
+<script type="text/javascript">
+    //百度地图输入框 自动提示
+    var ac = new BMap.Autocomplete({   //建立一个自动完成的对象
+        "input" : "address"         //填输入框的id属性
+    });
+    ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+        var str = "";
+        var _value = e.fromitem.value;
+        var value = "";
+        if (e.fromitem.index > -1) {
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+        value = "";
+        if (e.toitem.index > -1) {
+            _value = e.toitem.value;
+            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        }
+        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+    });
+
+    var myValue;
+    ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+        var _value = e.item.value;
+        myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+        app.adopt.address = myValue;
+    });
+
+    let app = new Vue({
+        el:"#app",
+        data:{
+            adopt:{
+                name:'',
+                title:'',
+                address:'',
+                gender: 0,
+                price:'',
+                coat_color: null,
+                pet_type:null,
+                age:'',
+                resources:''
+            },
+            coat_colors:[],     //宠物毛色下拉框数据
+            pet_types:[]        //宠物品种
+        },
+        methods:{
+            //发送请求查询宠物毛色（数据字典明细）
+            loadCoatColor(){
+                this.$http.get("/systemDictionaryDetail/coat_color").then(res => {
+                    this.coat_colors = res.data
+                })
+            },
+            loadPetType(){
+                this.$http.get("/pettype").then(res=>{
+                    this.pet_types = res.data;
+                })
+            },
+            //文件上传
+            uploadImg(){
+                const uploadConfig = {
+                    fastDfsUrl:'http://121.37.194.36',     //图片显示的地址前缀
+                    action:  'http://localhost:8080/fastdfs/upload',  // 必填参数 后端接口图片上传地址
+                    methods: 'POST',  // 必填参数 图片上传方式
+                    token: '',  // 可选参数 如果需要token验证，假设你的token有存放在sessionStorage
+                    name: 'file',  // 必填参数 文件的参数名
+                    size: 20480,  // 可选参数   图片大小，单位为Kb, 1M = 1024Kb
+                    accept: 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon'  // 可选 可上传的图片格式
+                };
+                // 创建formData
+                var formData = new FormData();
+
+                var fileInput = this.container.querySelector('input.ql-image[type=file]');
+                formData.append(uploadConfig.name, fileInput.files[0]);
+                formData.append('object','product');
+                // 如果需要token且存在token
+                if (uploadConfig.token) {
+                    formData.append('token', uploadConfig.token)
+                }
+                // 图片上传
+                var xhr = new XMLHttpRequest();
+                xhr.open(uploadConfig.methods, uploadConfig.action, true);
+                // 上传数据成功，会触发
+                xhr.onload = function (e) {
+                    if (xhr.status === 200) {
+                        var res = JSON.parse(xhr.responseText);
+                        let length = self.quill.getSelection(true).index;
+                        //这里很重要，你图片上传成功后，img的src需要在这里添加，res.data就是你服务器返回的图片链接。
+                        self.quill.insertEmbed(length, 'image', uploadConfig.fastDfsUrl+res.data);
+                        //让富文本编辑框的光标移到末尾
+                        self.quill.setSelection(length + 1)
+                    }
+                    fileInput.value = ''
+                };
+                xhr.send(formData)
+            },
+            //提交表单
+            submitAdopt(){
+                //提交表单之前还应该做一些表单验证：名称、价格、标题、毛色、宠物类型、用户地址都必填
+                this.$http.put("/adopt", this.adopt).then(res => {
+                    let {success,msg} = res.data
+                    alert(msg)
+                    if(success){
+                        //跳转到 个人中心  -》 我的寻主消息 页面
+                    }
+                })
+
+            }
+        },
+        mounted(){
+            this.loadCoatColor();
+            this.loadPetType();
+        }
+    })
+</script>
+
+</body>
+
+</html>

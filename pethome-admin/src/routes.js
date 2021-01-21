@@ -14,6 +14,8 @@ import employee from './views/org/Employee.vue'
 import shop from './views/org/Shop.vue'
 import SettledIn from './views/user/SettledIn.vue'
 import Product from './views/product/Product'
+import Adopt from './views/pet/Adopt'
+import Pet from './views/pet/Pet'
 
 let routes = [
     {
@@ -68,11 +70,11 @@ let routes = [
     {
         path: '/',
         component: Home,
-        name: '',
+        name: '宠物管理',
         iconCls: 'fa fa-address-card',
-        leaf: true,//只有一个节点
         children: [
-            { path: '/page6', component: Page6, name: '导航三' }
+            { path: '/adopt', component: Adopt, name: '宠物寻主管理' },
+            { path: '/pet', component: Pet, name: '宠物列表管理' }
         ]
     },
 
