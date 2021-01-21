@@ -321,9 +321,16 @@
         methods:{
             chooseShops(sc){
                 let id = 'J_CheckBox_'+sc.id
-                console.log(id+"------"+$("#id"))
-                this.totalShop += sc.buycount;
-                this.totalAmount += sc.amount;
+                //console.log(sc.id+"---"+$("#"+id).is(":checked"))
+                //console.log(sc.id+"------"+$("#J_CheckBox_"+sc.id).is(":checked"))
+                if($("#"+id).is(":checked")){
+                    this.totalShop += sc.buycount;
+                    this.totalAmount += sc.amount;
+                }else {
+                    this.totalShop -= sc.buycount;
+                    this.totalAmount -= sc.amount;
+                }
+
             }
         },
         mounted(){

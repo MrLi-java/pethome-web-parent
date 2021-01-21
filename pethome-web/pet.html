@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>商品服务列表</title>
+    <title>宠物列表</title>
 
     <link href="./AmazeUI-2.4.2/assets/css/amazeui.css" rel="stylesheet" type="text/css"/>
     <link href="./AmazeUI-2.4.2/assets/css/admin.css" rel="stylesheet" type="text/css"/>
@@ -23,9 +23,8 @@
     <script src="./plugins/vue/dist/vue.js"></script>
     <script src="./plugins/axios/dist/axios.js"></script>
     <script src="./js/common.js"></script>
-
     <style type="text/css">
-        .am-disabled{cursor: no-drop}
+        .am-disabled{cursor: no-drop;}
     </style>
 </head>
 
@@ -52,7 +51,7 @@
             <div class="topMessage mini-cart">
                 <div class="menu-hd"><a id="mc-menu-hd" href="shopcart.html" target="_top"><i
                         class="am-icon-shopping-cart  am-icon-fw"></i><span>购物车</span><strong id="J_MiniCartNum"
-                                                                                              class="h">{{buycount}}</strong></a></div>
+                                                                                              class="h">0</strong></a></div>
             </div>
             <div class="topMessage favorite">
                 <div class="menu-hd"><a href="#" target="_top"><i class="am-icon-heart am-icon-fw"></i><span>收藏夹</span></a>
@@ -86,8 +85,8 @@
                 <div class="nav-cont">
                     <ul>
                         <li class="index"><a href="index.html">首页</a></li>
-                        <li class="qc"><a href="javascript:void(0)">商品服务</a></li>
-                        <li class="qc"><a href="#">限时抢</a></li>
+                        <li class="qc"><a href="product.html">商品服务</a></li>
+                        <li class="qc"><a href="javascript:void(0)">宠物列表</a></li>
                         <li class="qc"><a href="#">团购</a></li>
                         <li class="qc last"><a href="#">大包装</a></li>
                     </ul>
@@ -177,9 +176,9 @@
                         <div class="clear"></div>
 
                         <ul class="am-avg-sm-2 am-avg-md-3 am-avg-lg-4 boxes">
-                            <li v-for="(p,index) in products" @click="showProductDetail(p.id)">
+                            <li v-for="(p,index) in pets" @click="showPetDetail(p.id)">
                                 <div class="i-pic limit">
-                                    <img :src="'http://121.37.194.36/' + p.resources.split(',')[0]"
+                                    <img :src="fastdfsHost + p.resources.split(',')[0]"
                                          style="width: 218px;height: 218px;"/>
                                     <p class="title fl">{{p.name}}</p>
                                     <p class="price fl">
@@ -243,18 +242,19 @@
                     <div class="clear"></div>
                     <!--分页 -->
                     <ul class="am-pagination am-pagination-right" id="am-pagination">
-                        <li :class="queryParam.currentPage==1?'am-disabled':''"><a @click="changePage(-1)" href="javascript:void(0)">&laquo;</a></li>
-                        <li v-if="queryPage[0]>1"><a href="javascript:void(0)">...</a></li>
-                        <li :class="i==queryPage[0]?'am-active':''" :page="i" v-for="i in queryPage"><a  @click="changePage(i)" href="javascript:void(0)">{{i}}</a></li>
-                       <!-- <li class="am-active"><a @click="changePage(1)" href="javascript:void(0)">1</a></li>
-                        <li><a @click="changePage(2)" href="javascript:void(0)">2</a></li>
-                        <li><a @click="changePage(3)" href="javascript:void(0)">3</a></li>
-                        <li><a @click="changePage(4)" href="javascript:void(0)">4</a></li>
-                        <li><a @click="changePage(5)" href="javascript:void(0)">5</a></li>-->
-                        <li v-if="totalPage>5"><a href="javascript:void(0)">...</a></li>
-                        <li :class="queryParam.currentPage==totalPage?'am-disabled':''"><a @click="changePage(0)" href="javascript:void(0)">&raquo;</a></li>
+                        <!-- 当前页码为1的时候，上一页按钮禁止点击 -->
+                        <li :class="queryParam.currentPage==1?'am-disabled':''"><a href="javascript:void(0)" @click="changePage(-1)">&laquo;</a></li>
+                        <li class="am-active" page="1"><a href="javascript:void(0)" @click="changePage(1)">1</a></li>
+                        <li v-if="totalPage>=2" page="2"><a href="javascript:void(0)" @click="changePage(2)">2</a></li>
+                        <li v-if="totalPage>=3" page="3"><a href="javascript:void(0)" @click="changePage(3)">3</a></li>
+                        <li v-if="totalPage>=4" page="4"><a href="javascript:void(0)" @click="changePage(4)">4</a></li>
+                        <li v-if="totalPage>=5" page="5"><a href="javascript:void(0)" @click="changePage(5)">5</a></li>
+                        <li v-if="totalPage>5" page="6"><a href="javascript:void(0)">
+                            {{queryParam.currentPage>5 ? queryParam.currentPage : "..."}}
+                        </a></li>
+                        <!-- 当前页码等于总页数时，表示已在最后一页，下一页按钮就禁用 -->
+                        <li :class="queryParam.currentPage==totalPage?'am-disabled':''"><a href="javascript:void(0)" @click="changePage(0)">&raquo;</a></li>
                     </ul>
-
                 </div>
             </div>
             <div class="footer">
@@ -318,13 +318,13 @@
 
                 </div>
                 <div id="shopCart" class="item">
-                    <a href="shopcart.html">
+                    <a href="">
                         <span class="message"></span>
                     </a>
-                    <p>
+                    <p onclick="location.href = 'shopcart.html'">
                         购物车
                     </p>
-                    <p class="cart_num">{{buycount}}</p>
+                    <p class="cart_num">0</p>
                 </div>
                 <div id="asset" class="item">
                     <a href="#">
@@ -469,75 +469,62 @@
                 keyword: '',
                 state: 0    //前台只能查询已上线的商品
             },
-            products:[],    //列表页面的商品数组
+            pets:[],    //列表页面的商品数组
             total: 0,       //总行数
-            totalPage:1,
-            queryPage:[1,2,3,4,5],
-            buycount:0,
+            totalPage:0     //总页数
         },
         methods:{
             //分页查询商品列表
             loadProducts(){
-                this.$http.post("/front/product", this.queryParam).then(res => {
-                    this.products = res.data.rows
+                this.$http.post("/front/pet", this.queryParam).then(res => {
+                    this.pets = res.data.rows
                     this.total = res.data.total
-                    this.totalPage = this.total % this.queryParam.pageSize === 0 ?
-                        this.total/this.queryParam.pageSize :
-                        Math.floor(this.total / this.queryParam.pageSize)+1
+                    console.debug(res.data)
+                    //计算总页数
+                    this.totalPage = this.total%this.queryParam.pageSize == 0 ?
+                        this.total/this.queryParam.pageSize : Math.floor(this.total/this.queryParam.pageSize) + 1
+                    //Math.floor 表示有小数点的时候 向下取整
                 })
             },
-            //点击商品查看详情
-            showProductDetail(productId){
+            //点击宠物查看详情
+            showPetDetail(petId){
+                //点击后，宠物列表页面将会丢失，类似于超链接
+                //location.href = "/petDetails.html?id="+petId
                 //重新打开一个浏览器标签页查看详情，相当于超链接上面写了target属性
-                window.open("/productDetails.html?id="+productId, "_blank")
+                window.open("/petDetails.html?id="+petId, "_blank")
             },
+            //翻页
             changePage(to){
-                if(to===-1){
-                    if(this.queryParam.currentPage===this.queryPage[0]){
-                        for(let i=0 ;i < this.queryPage.length;i++){
-                            this.queryPage[i] = this.queryPage[i]-1;
-                        }
+                //修改当前页码，发送到后端去加载数据
+                if(to == -1){       //上一页
+                    if(this.queryParam.currentPage == 1){
+                        return;
                     }
-                    this.queryParam.currentPage--;
-                }else if(to===0){
-                    if(this.queryParam.currentPage===this.queryPage[4]){
-                        for(let i=0 ;i < this.queryPage.length;i++){
-                            this.queryPage[i] = this.queryPage[i]+1;
-                        }
-                        this.loadProducts();
-                        //$("#am-pagination li").removeClass("am-active");
-                        // // $("#am-pagination li").eq(this.queryParam.currentPage).addClass("am-active");
-                        // //let _this = this
-                        //$("#am-pagination li[page="+this.queryParam.currentPage+"]").addClass("am-active")
-
+                    this.queryParam.currentPage--
+                }else if(to == 0){  //下一页
+                    if(this.queryParam.currentPage == this.totalPage){
+                        return;
                     }
-                    this.queryParam.currentPage++;
-
-                }else {
-                    this.queryParam.currentPage = to;
+                    this.queryParam.currentPage++
+                }else{              //若传入的参数大于0，是几就表示跳到第几页
+                    this.queryParam.currentPage = to
                 }
                 //发送请求去加载数据
-                //this.loadProducts()
+                this.loadProducts()
+
                 //先删除所有li标签上面的选中状态样式
-                $("#am-pagination li").removeClass("am-active");
-                // $("#am-pagination li").eq(this.queryParam.currentPage).addClass("am-active");
-                //let _this = this
-                $("#am-pagination li[page="+this.queryParam.currentPage+"]").addClass("am-active")
-                console.log($("#am-pagination li[page="+this.queryParam.currentPage+"]").get(0))
-                // console.log(this.queryParam.currentPage+"-----");
-                // console.log(this.queryPage);
+                $("#am-pagination>li").removeClass("am-active");
+                //给当前页添加选中状态样式
+                $("#am-pagination>li[page="+this.queryParam.currentPage+"]").addClass("am-active")
+                if(this.queryParam.currentPage >= 6){
+                    //jQuery的属性晒选选择器：先查找到标签数组，标签数组中再进行筛选【通过属性值来筛选】
+                    $("#am-pagination>li[page=6]").addClass("am-active")
+                }
             }
         },
         mounted(){
             //页面挂载完毕后，发送请求去分页查询商品服务列表
             this.loadProducts()
-            if(localStorage.getItem("loginUser")){
-                this.$http.put("/shopcart/counts").then(res=>{
-                    console.log(res)
-                    this.buycount = res.data;
-                })
-            }
-
         }
     })
 </script>

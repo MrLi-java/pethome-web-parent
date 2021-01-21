@@ -29,6 +29,8 @@
       </el-table-column>
       <el-table-column prop="petType.name" label="宠物类型" width="80">
       </el-table-column>
+      <el-table-column prop="coatColor.name" label="宠物毛发" width="80">
+      </el-table-column>
       <el-table-column prop="costprice" label="成本价" width="100" sortable>
       </el-table-column>
       <el-table-column prop="saleprice" label="销售价" width="100" sortable>
@@ -37,7 +39,7 @@
       </el-table-column>
       <el-table-column prop="onsaletime" label="上架时间" width="120" sortable>
       </el-table-column>
-      <el-table-column prop="createtime" label="创建时间" width="120" sortable>
+      <el-table-column prop="user.username" label="购买人" width="120" sortable>
       </el-table-column>
       <el-table-column prop="state" label="状态" width="80"  sortable>
         <template scope="scope">
@@ -397,12 +399,18 @@
 
       onsale(){
 
-        var ids = this.sels.map(item => item.id);
-        alert(ids)
+        let ids = this.sels.map(item => item.id);
+        let states = this.sels.map(item => item.state)
         if(!this.sels || this.sels.length  <1){
-          this.$message({ message: '您没有选中商品....',type: 'error'});
+          this.$message({ message: '您没有选中宠物....',type: 'error'});
           return;
         }
+        states.forEach(item => {
+          if(item===0){
+            this.$message({ message: '您选中的宠物有已经上架的，不能重复上架....',type: 'error'});
+            return ;
+          }
+        })
         this.$http.patch("/pet/onsale",ids).then(res=>{
           let {success,msg} = res.data;
           if(success){
