@@ -34,6 +34,7 @@
 </head>
 
 <body>
+<div id="AliPayDiv" ></div>
 <div id="app">
     <!--顶部导航条 -->
     <div class="am-container header">
@@ -478,10 +479,9 @@
                 }
                 console.debug(adoptOrder)
                 this.$http.put("/adoptOrder",adoptOrder).then(res=>{
-                    let {success,msg} = res.data
+                    let {success,msg,data} = res.data
                     if(success){
-                        //跳转到success.html【由于今天还没做支付，所以暂时跳到这个页面】
-                        location.href = "/success.html"
+                        $("#AliPayDiv").html(data);
                     }else{
                         alert(msg)
                     }
