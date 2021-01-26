@@ -16,7 +16,7 @@ import 'font-awesome/css/font-awesome.min.css'
 
 import axios from 'axios'
 //配置axios的全局基本路径
-axios.defaults.baseURL='http://172.16.80.252:8080'
+axios.defaults.baseURL='http://api.lmqstudy.top'
 //全局属性配置，在任意组件内可以使用this.$http获取axios对象
 Vue.prototype.$http = axios
 

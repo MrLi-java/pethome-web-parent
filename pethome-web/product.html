@@ -497,6 +497,8 @@
                         for(let i=0 ;i < this.queryPage.length;i++){
                             this.queryPage[i] = this.queryPage[i]-1;
                         }
+                        this.loadProducts();
+                        return ;
                     }
                     this.queryParam.currentPage--;
                 }else if(to===0){
